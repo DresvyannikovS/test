@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Проект "Комменты"</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <ul id="ul" class="comments">
+        <li id="li" class="comment"></li>
+      </ul>
+
+      <div class="add-form">
+        <input
+          id="name"
+          type="text"
+          class="add-form-name"
+          placeholder="Введите ваше имя"
+        />
+        <textarea
+          id="comment"
+          type="textarea"
+          class="add-form-text"
+          placeholder="Введите ваш коментарий"
+          rows="4"
+        ></textarea>
+        <div class="add-form-row">
+          <button id="button" class="add-form-button">Написать</button>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    const ulEl = document.getElementById("ul");
+    const liEl = document.getElementById("li");
+    const nameEl = document.getElementById("name");
+    const commentEl = document.getElementById("comment");
+    const buttonEl = document.getElementById("button");
+    let likeCounter = 0;
+
+    const renderComments = () => {
+      const commentsHtml = arrayComments.map((item, index) => {
+        let text = "";
+        let classLike = item.like
+          ? '"like-button like-button-active"'
+          : '"like-button"';
+        if (item.isEdit) {
+          text = `<li class="comment">
+                <div class="comment-header">
+                <div>${item.name}</div>
+                <div>${item.date}</div>
+                </div>
+                <div class="comment-body">
+                <div class="comment-text">
+                    <textarea type="textarea" class="add-form-text edit"
+                rows="4">${item.comment}</textarea>
+                </div>
+                </div>
+                <div class="comment-footer">
+                   <button data-index=${index} class="save-button"></button> 
+                </div>
+                </li>`;
+        } else {
+          text = `<li class="comment" data-index=${index}>
+                <div class="comment-header">
+                <div>${item.name}</div>
+                <div>${item.date}</div>
+                </div>
+                <div class="comment-body">
+                <div class="comment-text">
+                    ${item.comment}
+                </div>
+                </div>
+                <div class="comment-footer">
+                <div class="likes">
+                <span class="likes-counter">${Number(item.like)}</span>
+                <div class="buttons-icons">
+                <button data-index=${index} class="edit-button"></button>
+                <button data-index=${index} class=${classLike}></button>
+                </div>
+                </div>
+                </div>
+                </li>`;
+        }
+        return text;
+      });
+      ulEl.innerHTML = commentsHtml.join("");
+    };
+
+    const arrayComments = [
+      {
+        name: "Глеб Фокин",
+        date: "12.02.22 12:18",
+        comment: "Это будет первый комментарий на этой странице",
+        like: false,
+        isEdit: false,
+      },
+      {
+        name: "Варвара",
+        date: "13.02.22 19:22",
+        comment: "Мне нравится как оформлена эта страница! ❤",
+        like: false,
+        isEdit: false,
+      },
+    ];
+
+    ulEl.addEventListener("click", function (event) {
+      const arrayCommentsElement = arrayComments[event.target.dataset.index];
+
+      if (event.target.classList.contains("like-button")) {
+        arrayCommentsElement.like = !arrayCommentsElement.like;
+
+        renderComments();
+      }
+
+      if (event.target.classList.contains("edit-button")) {
+        arrayCommentsElement.isEdit = !arrayCommentsElement.isEdit;
+
+        renderComments();
+      }
+
+      if (event.target.classList.contains("save-button")) {
+        if (arrayCommentsElement.isEdit) {
+          const index = event.target.dataset.index;
+
+          const closestCommentElement = event.target.closest(".comment");
+
+          const childEditTextEl = closestCommentElement.querySelector(".edit");
+
+          if (childEditTextEl.value !== "") {
+            arrayCommentsElement.comment = childEditTextEl.value;
+          }
+
+          arrayCommentsElement.isEdit = false;
+        }
+
+        renderComments();
+      }
+    });
+
+    renderComments();
+
+    nameEl.addEventListener("input", function (e) {
+      if (nameEl.value !== "" && commentEl !== "") {
+        console.log(nameEl.value);
+        buttonEl.classList.remove("add-form-button");
+        buttonEl.classList.add("add-form-button-active");
+      } else {
+        buttonEl.classList.add("add-form-button");
+        buttonEl.classList.remove("add-form-button-active");
+      }
+    });
+
+    commentEl.addEventListener("input", function (e) {
+      if (nameEl.value !== "" && commentEl.value !== "") {
+        buttonEl.classList.remove("add-form-button");
+        buttonEl.classList.add("add-form-button-active");
+      } else {
+        buttonEl.classList.add("add-form-button");
+        buttonEl.classList.remove("add-form-button-active");
+      }
+    });
+
+    liEl.addEventListener("click", (event) => {
+      console.log("here");
+      console.log(
+        "&lt;" +
+          String(arrayComments[event.target.dataset.index].comment) +
+          "&para;" +
+          String(arrayComments[event.target.dataset.index].name) +
+          "., "
+      );
+    });
+
+    buttonEl.addEventListener("click", function (e) {
+      if (nameEl.value !== "" && commentEl.value !== "") {
+        const date = new Date();
+        const formatterDate = new Intl.DateTimeFormat("ru-RU", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        });
+        const formatterTime = new Intl.DateTimeFormat("ru-RU", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        const formattedDate = formatterDate.format(date);
+        const formattedTime = formatterTime.format(date);
+
+        let dateComment = String(formattedDate) + " " + String(formattedTime);
+
+        arrayComments.push({
+          name: `${nameEl.value}`,
+          date: `${dateComment}`,
+          comment: `${commentEl.value}`,
+          like: false,
+          isEdit: false,
+        });
+
+        renderComments();
+
+        buttonEl.classList.add("add-form-button");
+        buttonEl.classList.remove("add-form-button-active");
+      } else {
+        return;
+      }
+
+      nameEl.value = "";
+      commentEl.value = "";
+    });
+  </script>
+</html>

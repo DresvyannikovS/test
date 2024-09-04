@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <link rel="stylesheet" href="test_style.css">
+</head>
+
+<body>
+    <div class="first">
+        <div class="item">
+            <h2 class="title">Мышь игровая</h2>
+            <p class="text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, aliquam.</p>
+            <button class="button">купить</button>
+        </div>
+
+        <div class="item">
+            <h2 class="title">Мышь игровая</h2>
+            <p class="text">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Sit, aliquam.</p>
+            <button class="button">купить</button>
+        </div>
+    </div>
+    <script>
+        const itemEL = document.querySelector('.item');
+        const buttonEl = document.querySelector('.button');
+        const firstEl = document.querySelector('.first');
+
+        itemEL.addEventListener('click', () => {
+            console.log('нажато на весь блок');
+            event.stopPropagation();
+        })
+
+        buttonEl.addEventListener('click', () => {
+            console.log('нажато на кнопку');
+            event.stopPropagation();
+        })
+
+        
+        firstEl.addEventListener('click', () => {
+            console.log('нажато на вообще все');
+        })
+    </script>
+</body>
+
+</html>
